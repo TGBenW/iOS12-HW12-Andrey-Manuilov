@@ -27,6 +27,17 @@ class ViewController: UIViewController {
         return label
     }()
     
+    private lazy var labelTimer: UILabel = {
+        let label = UILabel()
+        label.text = "Timer"
+        label.textAlignment = .center
+        label.textColor = .red
+        label.transform = CGAffineTransform(rotationAngle: -12 * .pi / 180)
+        label.font = UIFont(name: "BradleyHandITCTT-Bold", size: 48) ?? UIFont.systemFont(ofSize: 48, weight: .regular)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
     private lazy var labelCountdown: UILabel = {
         let label = UILabel()
         label.attributedText = NSAttributedString(string: "00:25", attributes: [.kern: -3.0])
@@ -63,6 +74,35 @@ class ViewController: UIViewController {
         return progressCircle
     }()
     
+    private lazy var resetButton: UIButton = {
+        let button = UIButton()
+        let image = UIImage(named: "reset")
+
+        button.setImage(image, for: .normal)
+        button.addTarget(self, action: #selector(resetButtonTapped), for: .touchUpInside)
+
+        button.imageView?.contentMode = .center
+        button.contentHorizontalAlignment = .center
+        button.contentVerticalAlignment = .center
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    private lazy var infoButton: UIButton = {
+        let button = UIButton()
+        let infoIconConfig = UIImage.SymbolConfiguration(pointSize: buttonSize*0.85, weight: .light, scale: .default)
+        let image = UIImage(systemName: "info.circle")?.withTintColor(.label, renderingMode: .alwaysOriginal).applyingSymbolConfiguration(infoIconConfig)
+
+        button.setImage(image, for: .normal)
+        button.addTarget(self, action: #selector(infoButtonTapped), for: .touchUpInside)
+
+        button.imageView?.contentMode = .center
+        button.contentHorizontalAlignment = .center
+        button.contentVerticalAlignment = .center
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
     //MARK: - Lifestyle
 
     override func viewDidLoad() {
@@ -85,15 +125,23 @@ class ViewController: UIViewController {
     
     private func setupHierarchy() {
         view.addSubview(labelPomodoro)
+        view.addSubview(labelTimer)
         view.addSubview(labelCountdown)
         view.addSubview(playButton)
         view.addSubview(progressCircle)
+        view.addSubview(resetButton)
+        view.addSubview(infoButton)
     }
     
     private func setupLayout() {
         labelPomodoro.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide.snp.top).offset(80)
             make.centerX.equalToSuperview()
+        }
+        
+        labelTimer.snp.makeConstraints { make in
+            make.top.equalTo(labelPomodoro.snp.bottom).offset(-20)
+            make.right.equalTo(labelPomodoro.snp.right).offset(48)
         }
         
         labelCountdown.snp.makeConstraints { make in
@@ -109,6 +157,16 @@ class ViewController: UIViewController {
         progressCircle.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.width.height.equalTo(circleDiameter)
+        }
+        
+        resetButton.snp.makeConstraints { make in
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-25)
+            make.trailing.equalTo(view.safeAreaLayoutGuide.snp.trailing).offset(-30)
+        }
+        
+        infoButton.snp.makeConstraints { make in
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-20)
+            make.leading.equalTo(view.safeAreaLayoutGuide.snp.leading).offset(20)
         }
     }
     
@@ -127,7 +185,7 @@ class ViewController: UIViewController {
         updateButtonImage()
     }
     
-    @objc private func restartButtonTapped() {
+    @objc private func resetButtonTapped() {
         timer?.invalidate()
         timer = nil
 
